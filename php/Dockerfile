@@ -1,10 +1,12 @@
 FROM php:fpm
 
 RUN apt-get update && apt-get -y upgrade
-RUN apt-get install -y \
-	libaio1 \
+RUN apt-get install --no-install-recommends -y \
+	libaio-dev \
+ 	libmcrypt-dev \
+ 	unzip \
 	wget \
-	unzip
+	zlib1g-dev
 
 RUN mkdir /opt/oracle \
 	&& cd /opt/oracle \
@@ -17,15 +19,18 @@ RUN mkdir /opt/oracle \
 	&& ln -s /opt/oracle/instantclient_12_1/libocci.so.12.1 /opt/oracle/instantclient_12_1/libocci.so \
 	&& rm -rf /opt/oracle/*.zip
 
-RUN docker-php-ext-install pdo_mysql \
-	&& pecl install redis \
-    && pecl install xdebug \
- 	&& echo 'instantclient,/opt/oracle/instantclient_12_1/' | pecl install oci8 \
+RUN docker-php-ext-install \
+		mcrypt \
+		pdo_mysql \
+		zip \
+	&& pecl install \
+		redis \
+ 	&& echo 'instantclient,/opt/oracle/instantclient_12_1/' | pecl install \
+	 	oci8 \
     && docker-php-ext-enable \
-    	redis \
-    	xdebug \
     	oci8 \
-    	opcache
+    	opcache \
+    	redis
 
 RUN curl -sS https://getcomposer.org/installer | php -- \
 	--install-dir=/usr/local/bin \

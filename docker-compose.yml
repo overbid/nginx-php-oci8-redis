@@ -2,7 +2,7 @@ version: "2"
 services:
     nginx:
         image: nginx:latest
-        container_name: nginx
+        container_name: www
         mem_limit: 256m
         ports:
             - "80:80"
@@ -12,8 +12,8 @@ services:
         depends_on:
             - php
     php:
-        build: ./php
-        container_name: php
+        image: overbid/nginx-php-oci8-redis:latest
+        container_name: phpfpm
         mem_limit: 256m
         volumes:
             - ./code:/code
@@ -21,5 +21,5 @@ services:
             - redis
     redis:
         image: redis:latest
-        container_name: redis
+        container_name: cache
         mem_limit: 256m
