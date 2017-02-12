@@ -1,7 +1,10 @@
 FROM php:fpm
 
+MAINTAINER Eakkapat Pattarathamrong (overbid@gmail.com)
+
 RUN apt-get update && apt-get -y upgrade
-RUN apt-get install --no-install-recommends -y \
+RUN apt-get install -y \
+	git \
 	libaio-dev \
  	libmcrypt-dev \
  	unzip \
