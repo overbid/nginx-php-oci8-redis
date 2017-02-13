@@ -5,11 +5,18 @@ MAINTAINER Eakkapat Pattarathamrong (overbid@gmail.com)
 RUN apt-get update && apt-get -y upgrade
 RUN apt-get install -y \
 	git \
-	libaio-dev \
- 	libmcrypt-dev \
  	unzip \
-	wget \
-	zlib1g-dev
+	wget
+
+RUN apt-get install -y \
+	freetds-dev \
+	libaio1 \
+	libjpeg62-turbo \
+	libfreetype6 \
+ 	libmcrypt-dev \
+	libpng12-dev \
+	zlib1g-dev \
+	&& ln -s /usr/lib/x86_64-linux-gnu/libsybdb.a /usr/lib/
 
 RUN mkdir /opt/oracle \
 	&& cd /opt/oracle \
@@ -23,7 +30,9 @@ RUN mkdir /opt/oracle \
 	&& rm -rf /opt/oracle/*.zip
 
 RUN docker-php-ext-install \
+		gd \
 		mcrypt \
+		pdo_dblib \
 		pdo_mysql \
 		zip \
 	&& pecl install \

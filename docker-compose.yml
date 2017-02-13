@@ -14,6 +14,7 @@ services:
             - php
     php:
         image: overbid/nginx-php-oci8-redis:latest
+        # build: ./php
         container_name: phpfpm
         mem_limit: 256m
         volumes:
