@@ -25,15 +25,15 @@ services:
         image: redis:latest
         container_name: cache
         mem_limit: 256m
-    swaggerui:
-        image: swaggerapi/swagger-ui:latest
-        container_name: swagger-ui
-        ports:
-            - "8080:8080"
-        mem_limit: 64m
-    swaggereditor:
-        image: swaggerapi/swagger-editor:latest
-        container_name: swagger-editor
-        ports:
-            - "8081:8080"
-        mem_limit: 64m
+    # swaggerui:
+    #     image: swaggerapi/swagger-ui:latest
+    #     container_name: swagger-ui
+    #     ports:
+    #         - "8080:8080"
+    #     mem_limit: 64m
+    # swaggereditor:
+    #     image: swaggerapi/swagger-editor:latest
+    #     container_name: swagger-editor
+    #     ports:
+    #         - "8081:8080"
+    #     mem_limit: 64m

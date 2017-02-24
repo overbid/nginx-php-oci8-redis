@@ -32,17 +32,20 @@ RUN mkdir /opt/oracle \
 RUN docker-php-ext-install \
 		gd \
 		mcrypt \
+		pdo \
 		pdo_dblib \
 		pdo_mysql \
-		zip \
-	&& pecl install \
+		zip
+
+RUN pecl install \
 		redis \
  	&& echo 'instantclient,/opt/oracle/instantclient_12_1/' | pecl install \
-	 	oci8 \
-    && docker-php-ext-enable \
-    	oci8 \
+	 	oci8
+
+RUN docker-php-ext-enable \
+		oci8 \
     	opcache \
-    	redis
+		redis
 
 RUN curl -sS https://getcomposer.org/installer | php -- \
 	--install-dir=/usr/local/bin \
