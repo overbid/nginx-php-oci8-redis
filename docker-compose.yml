@@ -10,10 +10,12 @@ services:
             - "443:443"
         volumes:
             - ./site.conf:/etc/nginx/conf.d/default.conf
+            - ./code:/code
         depends_on:
             - php
     php:
         image: overbid/nginx-php-oci8-redis:latest
+        # build: ./benchmark
         # build: ./php
         container_name: phpfpm
         mem_limit: 256m
