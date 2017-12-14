@@ -1,55 +1,52 @@
 FROM php:fpm
 
-MAINTAINER Eakkapat Pattarathamrong (overbid@gmail.com)
+LABEL maintainer="Eakkapat Pattarathamrong (overbid@gmail.com)"
 
-RUN apt-get update && apt-get -y upgrade
-RUN apt-get install -y \
-	git \
- 	unzip \
-	wget
+ENV LD_LIBRARY_PATH /opt/oracle/instantclient_12_2
+ENV ORACLE_HOME /opt/oracle/instantclient_12_2
 
-RUN apt-get install -y \
-	freetds-dev \
-	libaio1 \
-	libjpeg62-turbo \
-	libfreetype6 \
- 	libmcrypt-dev \
-	libpng12-dev \
-	zlib1g-dev \
-	&& ln -s /usr/lib/x86_64-linux-gnu/libsybdb.a /usr/lib/
+RUN groupmod -g 500 www-data \
+        && usermod -u 500 www-data
 
-RUN mkdir /opt/oracle \
-	&& cd /opt/oracle \
-	&& wget https://s3.amazonaws.com/merofile/instantclient-basic-linux.x64-12.1.0.2.0.zip \
-	&& wget https://s3.amazonaws.com/merofile/instantclient-sdk-linux.x64-12.1.0.2.0.zip \
-	&& unzip /opt/oracle/instantclient-basic-linux.x64-12.1.0.2.0.zip -d /opt/oracle \
-	&& unzip /opt/oracle/instantclient-sdk-linux.x64-12.1.0.2.0.zip -d /opt/oracle \
-	&& ln -s /opt/oracle/instantclient_12_1/libclntsh.so.12.1 /opt/oracle/instantclient_12_1/libclntsh.so \
-	&& ln -s /opt/oracle/instantclient_12_1/libclntshcore.so.12.1 /opt/oracle/instantclient_12_1/libclntshcore.so \
-	&& ln -s /opt/oracle/instantclient_12_1/libocci.so.12.1 /opt/oracle/instantclient_12_1/libocci.so \
-	&& rm -rf /opt/oracle/*.zip
+RUN apt-get update \
+        && apt-get -y upgrade \
+        && apt-get install --no-install-recommends -y \
+                libaio1 \
+                libjpeg62-turbo-dev \
+                libfreetype6-dev \
+                libmcrypt-dev \
+                libpng-dev \
+                git \
+        && apt-get clean \
+        && rm -rf /var/lib/apt/lists/*
 
-RUN docker-php-ext-install \
-		gd \
-		mcrypt \
-		pdo \
-		pdo_dblib \
-		pdo_mysql \
-		zip
+ADD instantclient_12_2.tar.gz /opt/oracle/
+RUN  chmod +x /opt/oracle/instantclient_12_2/sqlplus \
+        && ln -s /opt/oracle/instantclient_12_2/libclntsh.so.12.1 /opt/oracle/instantclient_12_2/libclntsh.so \
+        && ln -s /opt/oracle/instantclient_12_2/libclntshcore.so.12.1 /opt/oracle/instantclient_12_2/libclntshcore.so \
+        && ln -s /opt/oracle/instantclient_12_2/libocci.so.12.1 /opt/oracle/instantclient_12_2/libocci.so
 
-RUN pecl install \
-		redis \
- 	&& echo 'instantclient,/opt/oracle/instantclient_12_1/' | pecl install \
-	 	oci8
+RUN docker-php-ext-configure \
+                gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
+        && docker-php-ext-configure \
+                pdo_oci --with-pdo-oci=instantclient,/opt/oracle/instantclient_12_2/,12.2 \
+        && docker-php-ext-install -j$(nproc) \
+                bcmath \
+                gd \
+                pdo_oci \
+                zip
+
+RUN echo 'instantclient,/opt/oracle/instantclient_12_2/' | pecl install \
+                oci8 \
+        && yes '' | pecl install -f \
+                mcrypt
 
 RUN docker-php-ext-enable \
-		oci8 \
-    	opcache \
-		redis
+                mcrypt \
+                oci8 \
+                opcache
 
-RUN curl -sS https://getcomposer.org/installer | php -- \
-	--install-dir=/usr/local/bin \
-	--filename=composer
-
-RUN apt-get clean \
-	&& rm -rf /var/lib/apt/lists/*
+RUN echo 'date.timezone = "Asia/Bangkok"' | tee /usr/local/etc/php/conf.d/locale.ini \
+        && echo 'default_charset = "utf-8"' | tee -a /usr/local/etc/php/conf.d/locale.ini \
+        && echo "cgi.fix_pathinfo = 1" | tee -a /usr/local/etc/php/conf.d/file.ini \
+        && echo "upload_max_filesize = 8M" | tee -a /usr/local/etc/php/conf.d/file.ini
