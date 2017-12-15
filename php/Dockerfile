@@ -1,4 +1,4 @@
-FROM php:fpm
+FROM php:7.2-rc-fpm
 
 LABEL maintainer="Eakkapat Pattarathamrong (overbid@gmail.com)"
 
@@ -16,7 +16,6 @@ RUN apt-get update \
                 libfreetype6-dev \
                 libmcrypt-dev \
                 libpng-dev \
-                git \
         && apt-get clean \
         && rm -rf /var/lib/apt/lists/*
 
@@ -34,7 +33,7 @@ RUN docker-php-ext-configure \
                 bcmath \
                 gd \
                 pdo_oci \
-                zip
+                sockets
 
 RUN echo 'instantclient,/opt/oracle/instantclient_12_2/' | pecl install \
                 oci8 \
@@ -50,3 +49,5 @@ RUN echo 'date.timezone = "Asia/Bangkok"' | tee /usr/local/etc/php/conf.d/locale
         && echo 'default_charset = "utf-8"' | tee -a /usr/local/etc/php/conf.d/locale.ini \
         && echo "cgi.fix_pathinfo = 1" | tee -a /usr/local/etc/php/conf.d/file.ini \
         && echo "upload_max_filesize = 8M" | tee -a /usr/local/etc/php/conf.d/file.ini
+
+COPY ./zz-socket.conf /usr/local/etc/php-fpm.d/zz-socket.conf
