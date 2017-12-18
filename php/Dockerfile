@@ -1,4 +1,4 @@
-FROM php:7.2-rc-fpm
+FROM php:fpm
 
 LABEL maintainer="Eakkapat Pattarathamrong (overbid@gmail.com)"
 
