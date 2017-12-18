@@ -50,4 +50,4 @@ RUN echo 'date.timezone = "Asia/Bangkok"' | tee /usr/local/etc/php/conf.d/locale
         && echo "cgi.fix_pathinfo = 1" | tee -a /usr/local/etc/php/conf.d/file.ini \
         && echo "upload_max_filesize = 8M" | tee -a /usr/local/etc/php/conf.d/file.ini
 
-COPY ./zz-socket.conf /usr/local/etc/php-fpm.d/zz-socket.conf
+# COPY ./zz-socket.conf /usr/local/etc/php-fpm.d/zz-socket.conf
