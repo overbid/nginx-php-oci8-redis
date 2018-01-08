@@ -16,6 +16,7 @@ RUN apt-get update \
                 libfreetype6-dev \
                 libmcrypt-dev \
                 libpng-dev \
+                git \
         && apt-get clean \
         && rm -rf /var/lib/apt/lists/*
 
@@ -33,7 +34,7 @@ RUN docker-php-ext-configure \
                 bcmath \
                 gd \
                 pdo_oci \
-                sockets
+                zip
 
 RUN echo 'instantclient,/opt/oracle/instantclient_12_2/' | pecl install \
                 oci8 \
