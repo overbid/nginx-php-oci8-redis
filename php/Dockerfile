@@ -29,11 +29,15 @@ RUN docker-php-ext-configure \
                 gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
         && docker-php-ext-configure \
                 pdo_oci --with-pdo-oci=instantclient,/opt/oracle/instantclient_12_2/,12.2 \
+        && docker-php-ext-configure \
+                intl \
         && docker-php-ext-install -j$(nproc) \
                 bcmath \
+                intl \
                 gd \
                 pdo_oci \
-                sockets
+                # sockets \
+                zip
 
 RUN echo 'instantclient,/opt/oracle/instantclient_12_2/' | pecl install \
                 oci8 \
