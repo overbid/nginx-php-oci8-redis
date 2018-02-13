@@ -5,20 +5,30 @@ LABEL maintainer="Eakkapat Pattarathamrong (overbid@gmail.com)"
 ENV LD_LIBRARY_PATH /opt/oracle/instantclient_12_2
 ENV ORACLE_HOME /opt/oracle/instantclient_12_2
 
-RUN groupmod -g 500 www-data \
+RUN set -x \
+        && groupmod -g 500 www-data \
         && usermod -u 500 www-data
 
 RUN set -x \
         && apt-get update \
         && apt-get -y upgrade \
         && apt-get install --no-install-recommends -y \
+               apt-transport-https \
+               gnupg \
+        && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
+        && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
+        && curl -sL https://deb.nodesource.com/setup_9.x | bash - \
+        && apt-get install --no-install-recommends -y \
+                git \
                 libaio1 \
                 libicu-dev \
                 libjpeg62-turbo-dev \
                 libfreetype6-dev \
                 libmcrypt-dev \
                 libpng-dev \
-                git \
+                nodejs \
+                vim \
+                yarn \
         && apt-get clean \
         && rm -rf /var/lib/apt/lists/*
 
@@ -41,7 +51,6 @@ RUN set -x \
                 intl \
                 gd \
                 pdo_oci \
-                # sockets \
                 zip
 
 RUN set -x \
